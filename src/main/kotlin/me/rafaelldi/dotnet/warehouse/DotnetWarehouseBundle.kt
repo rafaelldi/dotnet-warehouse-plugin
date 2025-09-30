@@ -1,13 +1,13 @@
-package com.github.rafaelldi.dotnet.warehouse
+package me.rafaelldi.dotnet.warehouse
 
 import com.intellij.DynamicBundle
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.annotations.PropertyKey
 
 @NonNls
-private const val BUNDLE = "messages.MyBundle"
+private const val BUNDLE = "messages.DotnetWarehouseBundle"
 
-object MyBundle : DynamicBundle(BUNDLE) {
+object DotnetWarehouseBundle : DynamicBundle(BUNDLE) {
 
     @JvmStatic
     fun message(@PropertyKey(resourceBundle = BUNDLE) key: String, vararg params: Any) =
