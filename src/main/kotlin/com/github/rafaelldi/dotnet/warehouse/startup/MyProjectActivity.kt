@@ -1,4 +1,4 @@
-package com.github.rafaelldi.dotnetwarehouseplugin.startup
+package com.github.rafaelldi.dotnet.warehouse.startup
 
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project

@@ -1,4 +1,4 @@
-package com.github.rafaelldi.dotnetwarehouseplugin
+package com.github.rafaelldi.dotnet.warehouse
 
 import com.intellij.DynamicBundle
 import org.jetbrains.annotations.NonNls

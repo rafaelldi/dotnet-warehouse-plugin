@@ -9,7 +9,7 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.rafaelldi.dotnetwarehouseplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.rafaelldi.dotnetwarehouseplugin.startup.MyProjectActivity" />
+        <toolWindow factoryClass="com.github.rafaelldi.dotnet.warehouse.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+        <postStartupActivity implementation="com.github.rafaelldi.dotnet.warehouse.startup.MyProjectActivity" />
     </extensions>
 </idea-plugin>

@@ -1,9 +1,9 @@
-package com.github.rafaelldi.dotnetwarehouseplugin.services
+package com.github.rafaelldi.dotnet.warehouse.services
 
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
-import com.github.rafaelldi.dotnetwarehouseplugin.MyBundle
+import com.github.rafaelldi.dotnet.warehouse.MyBundle
 
 @Service(Service.Level.PROJECT)
 class MyProjectService(project: Project) {

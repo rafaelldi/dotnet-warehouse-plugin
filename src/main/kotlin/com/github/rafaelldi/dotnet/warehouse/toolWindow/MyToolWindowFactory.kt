@@ -1,4 +1,4 @@
-package com.github.rafaelldi.dotnetwarehouseplugin.toolWindow
+package com.github.rafaelldi.dotnet.warehouse.toolWindow
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
@@ -8,8 +8,8 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
-import com.github.rafaelldi.dotnetwarehouseplugin.MyBundle
-import com.github.rafaelldi.dotnetwarehouseplugin.services.MyProjectService
+import com.github.rafaelldi.dotnet.warehouse.MyBundle
+import com.github.rafaelldi.dotnet.warehouse.services.MyProjectService
 import javax.swing.JButton
 
 
