@@ -4,11 +4,17 @@
     <name>Dotnet Warehouse</name>
     <vendor>rafaelldi</vendor>
 
-    <depends>com.intellij.modules.platform</depends>
+    <dependencies>
+        <module name="intellij.platform.compose"/>
+    </dependencies>
 
-    <resource-bundle>messages.DotnetWarehouseBundle</resource-bundle>
+    <resource-bundle>messages.WarehouseBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="me.rafaelldi.dotnet.warehouse.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+        <toolWindow factoryClass="me.rafaelldi.dotnet.warehouse.toolWindow.WarehouseToolWindowFactory"
+                    id="Warehouse"
+                    icon="me.rafaelldi.dotnet.warehouse.WarehouseIcons.WarehouseWindow"
+                    anchor="right"
+                    doNotActivateOnStart="true"/>
     </extensions>
 </idea-plugin>

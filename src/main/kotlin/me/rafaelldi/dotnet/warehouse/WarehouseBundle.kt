@@ -5,9 +5,9 @@ import org.jetbrains.annotations.NonNls
 import org.jetbrains.annotations.PropertyKey
 
 @NonNls
-private const val BUNDLE = "messages.DotnetWarehouseBundle"
+private const val BUNDLE = "messages.WarehouseBundle"
 
-object DotnetWarehouseBundle : DynamicBundle(BUNDLE) {
+object WarehouseBundle : DynamicBundle(BUNDLE) {
 
     @JvmStatic
     fun message(@PropertyKey(resourceBundle = BUNDLE) key: String, vararg params: Any) =
