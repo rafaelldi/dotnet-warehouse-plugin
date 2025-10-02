@@ -11,7 +11,7 @@ import java.nio.charset.Charset
 import java.util.concurrent.ConcurrentHashMap
 
 @Service(Service.Level.PROJECT)
-internal class LocalDotnetService(private val project: Project) {
+internal class LocalDotnetService(private val project: Project) : LocalDotnetProvider {
     companion object {
         internal fun getInstance(project: Project): LocalDotnetService = project.service()
 
@@ -21,18 +21,30 @@ internal class LocalDotnetService(private val project: Project) {
         private const val LIST_RUNTIMES_OPTION = "--list-runtimes"
     }
 
+    // https://learn.microsoft.com/en-us/dotnet/core/install/how-to-detect-installed-versions?pivots=os-linux#check-for-install-folders
+    // Linux:
+    // /home/user/.dotnet/dotnet
+    // /usr/lib/dotnet/dotnet
+    // /usr/share/dotnet/dotnet
+    // /usr/lib64/dotnet/dotnet
+    // macOS:
+    // /usr/local/share/dotnet/dotnet
+    // Windows:
+    // C:\Program Files\dotnet\dotnet.exe
+
     private val sdks = ConcurrentHashMap<String, LocalSdk>()
     private val runtimes = ConcurrentHashMap<String, LocalRuntime>()
 
-    internal fun findLocalSdks() {
+    override fun findLocalSdks(): List<LocalSdk> {
         val cmd = createDotnetCommandLine(LIST_SDKS_OPTION)
         val executionResult = ExecUtil.execAndGetOutput(cmd)
 
         if (executionResult.exitCode != 0 || executionResult.isTimeout) {
             LOG.info("Unable to find any dotnet sdks")
-            return
+            return emptyList()
         }
 
+        val result = mutableListOf<LocalSdk>()
         for (line in executionResult.stdoutLines) {
             val spaceIndex = line.indexOf(' ')
             if (spaceIndex <= 0 || spaceIndex >= line.length) continue
@@ -41,8 +53,9 @@ internal class LocalDotnetService(private val project: Project) {
             val pathString = line.substring(spaceIndex + 2, line.length - 1)
             val sdk = LocalSdk(version, Path(pathString))
 
-            sdks[version] = sdk
+            result.add(sdk)
         }
+        return result
     }
 
     internal fun findLocalRuntimes() {
@@ -65,7 +78,7 @@ internal class LocalDotnetService(private val project: Project) {
             val pathString = line.substring(secondSpaceIndex + 2, line.length - 1)
             val runtime = LocalRuntime(type, version, Path(pathString))
 
-            runtimes[version] = runtime
+            runtimes[pathString] = runtime
         }
     }
 
