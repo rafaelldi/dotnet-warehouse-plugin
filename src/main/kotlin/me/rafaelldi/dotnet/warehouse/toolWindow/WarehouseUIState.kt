@@ -2,8 +2,8 @@ package me.rafaelldi.dotnet.warehouse.toolWindow
 
 import me.rafaelldi.dotnet.warehouse.local.LocalSdk
 
-internal class WarehouseUIState(val sdks: List<LocalSdk>) {
-    companion object {
-        fun empty() = WarehouseUIState(emptyList())
-    }
+internal sealed class WarehouseUIState {
+    object Empty : WarehouseUIState()
+    object Loading : WarehouseUIState()
+    data class Success(val localSdks: List<LocalSdk>, val selectedIndex: Int) : WarehouseUIState()
 }

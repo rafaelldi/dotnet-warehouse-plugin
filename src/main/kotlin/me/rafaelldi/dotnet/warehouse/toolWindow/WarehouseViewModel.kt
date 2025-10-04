@@ -17,7 +17,7 @@ internal class WarehouseViewModel(
 
     private var currentWarehouseJob: Job? = null
 
-    private val _warehouseState = MutableStateFlow(WarehouseUIState.empty())
+    private val _warehouseState = MutableStateFlow<WarehouseUIState>(WarehouseUIState.Empty)
     internal val warehouseUIState: Flow<WarehouseUIState> = _warehouseState.asStateFlow()
 
     internal fun onReloadWarehouse() {
@@ -25,8 +25,16 @@ internal class WarehouseViewModel(
 
         currentWarehouseJob = viewModelScope.launch {
             val sdks = localSdkProvider.findLocalSdks()
-            _warehouseState.value = WarehouseUIState(sdks)
+            _warehouseState.value = WarehouseUIState.Success(sdks, 0)
         }
+    }
+
+    internal fun onSdkSelected(index: Int) {
+        val state = _warehouseState.value
+        if (state !is WarehouseUIState.Success) return
+
+        val newState = state.copy(selectedIndex = index)
+        _warehouseState.value = newState
     }
 
     override fun dispose() {
