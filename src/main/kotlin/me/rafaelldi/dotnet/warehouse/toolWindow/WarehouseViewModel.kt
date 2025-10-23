@@ -4,37 +4,43 @@ import com.intellij.openapi.Disposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import me.rafaelldi.dotnet.warehouse.local.LocalDotnetProvider
+import me.rafaelldi.dotnet.warehouse.local.LocalDotnetProviderApi
+import me.rafaelldi.dotnet.warehouse.local.LocalSdk
+
+internal interface WarehouseViewModelApi : Disposable {
+    val localSdkFlow: StateFlow<List<LocalSdk>>
+}
 
 internal class WarehouseViewModel(
     private val viewModelScope: CoroutineScope,
-    private val localSdkProvider: LocalDotnetProvider
-) : Disposable {
+    private val localDotnetProvider: LocalDotnetProviderApi
+) : WarehouseViewModelApi {
 
-    private var currentWarehouseJob: Job? = null
+    private var currentReloadJob: Job? = null
 
-    private val _warehouseState = MutableStateFlow<WarehouseUIState>(WarehouseUIState.Empty)
-    internal val warehouseUIState: Flow<WarehouseUIState> = _warehouseState.asStateFlow()
+    private val _localSdkFlow = MutableStateFlow(emptyList<LocalSdk>())
+    override val localSdkFlow: StateFlow<List<LocalSdk>> = _localSdkFlow.asStateFlow()
+
+    init {
+        localDotnetProvider
+            .localSdkFlow
+            .onEach { _localSdkFlow.emit(it) }
+            .launchIn(viewModelScope)
+    }
 
     internal fun onReloadWarehouse() {
-        currentWarehouseJob?.cancel()
-
-        currentWarehouseJob = viewModelScope.launch {
-            val sdks = localSdkProvider.findLocalSdks()
-            _warehouseState.value = WarehouseUIState.Success(sdks, 0)
+        currentReloadJob = viewModelScope.launch {
+            localDotnetProvider.reloadLocalSdks()
         }
     }
 
-    internal fun onSdkSelected(index: Int) {
-        val state = _warehouseState.value
-        if (state !is WarehouseUIState.Success) return
+    internal fun onCancelReload() {
+        currentReloadJob?.cancel()
+    }
 
-        val newState = state.copy(selectedIndex = index)
-        _warehouseState.value = newState
+    internal fun onSdkSelected(index: Int) {
     }
 
     override fun dispose() {

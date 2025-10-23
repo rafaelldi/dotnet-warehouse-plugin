@@ -10,8 +10,8 @@ skikoAwtRuntimeAll = "0.9.22"
 
 # plugins
 changelog = "2.4.0"
-intelliJPlatform = "2.9.0"
-kotlin = "2.1.20"
+intelliJPlatform = "2.10.1"
+kotlin = "2.2.20"
 qodana = "2025.1.1"
 
 [libraries]
