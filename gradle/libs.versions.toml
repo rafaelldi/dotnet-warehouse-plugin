@@ -12,7 +12,7 @@ skikoAwtRuntimeAll = "0.9.22"
 changelog = "2.4.0"
 intelliJPlatform = "2.10.1"
 kotlin = "2.2.20"
-qodana = "2025.1.1"
+qodana = "2025.2.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
