@@ -22,7 +22,7 @@ internal class WarehouseToolWindowFactory : ToolWindowFactory, DumbAware {
         Disposer.register(toolWindow.disposable, viewModel)
 
         toolWindow.addComposeTab("SDKs") {
-            WarehouseTab(viewModel)
+            LocalSdksTab(viewModel)
         }
     }
 }

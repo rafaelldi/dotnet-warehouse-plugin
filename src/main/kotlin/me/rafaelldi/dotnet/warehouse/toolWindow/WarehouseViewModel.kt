@@ -18,7 +18,7 @@ internal class WarehouseViewModel(
     private val localDotnetProvider: LocalDotnetProviderApi
 ) : WarehouseViewModelApi {
 
-    private var currentReloadJob: Job? = null
+    private var currentReloadSdksJob: Job? = null
 
     private val _localSdkFlow = MutableStateFlow(emptyList<LocalSdk>())
     override val localSdkFlow: StateFlow<List<LocalSdk>> = _localSdkFlow.asStateFlow()
@@ -30,14 +30,12 @@ internal class WarehouseViewModel(
             .launchIn(viewModelScope)
     }
 
-    internal fun onReloadWarehouse() {
-        currentReloadJob = viewModelScope.launch {
+    internal fun onReloadLocalSdks() {
+        currentReloadSdksJob?.cancel()
+
+        currentReloadSdksJob = viewModelScope.launch {
             localDotnetProvider.reloadLocalSdks()
         }
-    }
-
-    internal fun onCancelReload() {
-        currentReloadJob?.cancel()
     }
 
     internal fun onSdkSelected(index: Int) {

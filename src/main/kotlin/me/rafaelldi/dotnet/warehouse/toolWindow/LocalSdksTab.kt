@@ -28,13 +28,13 @@ import org.jetbrains.jewel.ui.theme.defaultBannerStyle
 import kotlin.io.path.absolutePathString
 
 @Composable
-internal fun WarehouseTab(viewModel: WarehouseViewModel) {
+internal fun LocalSdksTab(viewModel: WarehouseViewModel) {
     val localSdks by viewModel.localSdkFlow.collectAsState(emptyList())
 
     val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
-        viewModel.onReloadWarehouse()
+        viewModel.onReloadLocalSdks()
     }
 
     Column(
