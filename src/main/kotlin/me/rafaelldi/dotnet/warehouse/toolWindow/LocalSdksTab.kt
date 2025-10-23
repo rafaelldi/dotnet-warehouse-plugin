@@ -127,16 +127,16 @@ private fun LocalSdkBubble(
                 )
                 .padding(16.dp)
         ) {
-            LocalSdkPath(localSdk)
             LocalSdkVersion(localSdk)
+            LocalSdkPath(localSdk)
         }
     }
 }
 
 @Composable
-private fun LocalSdkPath(localSdk: LocalSdk) {
+private fun LocalSdkVersion(localSdk: LocalSdk) {
     Text(
-        text = localSdk.path.absolutePathString(),
+        text = localSdk.version,
         style = JewelTheme.defaultTextStyle.copy(
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal,
@@ -148,9 +148,9 @@ private fun LocalSdkPath(localSdk: LocalSdk) {
 }
 
 @Composable
-private fun LocalSdkVersion(localSdk: LocalSdk) {
+private fun LocalSdkPath(localSdk: LocalSdk) {
     Text(
-        text = localSdk.version,
+        text = localSdk.path.absolutePathString(),
         style = JewelTheme.defaultTextStyle.copy(
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal,
