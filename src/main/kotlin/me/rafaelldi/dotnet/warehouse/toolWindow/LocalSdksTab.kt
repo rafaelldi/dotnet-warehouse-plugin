@@ -24,7 +24,7 @@ import org.jetbrains.jewel.foundation.ExperimentalJewelApi
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.VerticallyScrollableContainer
-import org.jetbrains.jewel.ui.theme.defaultBannerStyle
+import org.jetbrains.jewel.ui.theme.colorPalette
 import kotlin.io.path.absolutePathString
 
 @Composable
@@ -61,7 +61,9 @@ private fun LocalSdkList(
             EmptySdkListPlaceholder()
         } else {
             VerticallyScrollableContainer(
-                modifier = Modifier.fillMaxWidth().safeContentPadding(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .safeContentPadding(),
                 scrollState = listState,
             ) {
                 LazyColumn(
@@ -107,22 +109,22 @@ private fun LocalSdkBubble(
     modifier: Modifier = Modifier
 ) {
     val localSdkShape = RoundedCornerShape(
-        topStart = 16.dp,
-        topEnd = 16.dp,
-        bottomStart = 16.dp,
-        bottomEnd = 16.dp
+        topStart = 8.dp,
+        topEnd = 8.dp,
+        bottomStart = 8.dp,
+        bottomEnd = 8.dp
     )
 
     Row(
         modifier = modifier
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = 8.dp, vertical = 4.dp),
     ) {
         Column(
             modifier = Modifier
                 .wrapContentSize()
                 .fillMaxWidth()
                 .background(
-                    JewelTheme.defaultBannerStyle.information.colors.background.copy(alpha = 0.75f),
+                    JewelTheme.colorPalette.gray(3),
                     localSdkShape
                 )
                 .padding(16.dp)
@@ -139,7 +141,7 @@ private fun LocalSdkVersion(localSdk: LocalSdk) {
         text = localSdk.version,
         style = JewelTheme.defaultTextStyle.copy(
             fontSize = 14.sp,
-            fontWeight = FontWeight.Normal,
+            fontWeight = FontWeight.Bold,
             color = JewelTheme.globalColors.text.normal,
             lineHeight = 20.sp
         ),
@@ -154,9 +156,8 @@ private fun LocalSdkPath(localSdk: LocalSdk) {
         style = JewelTheme.defaultTextStyle.copy(
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal,
-            color = JewelTheme.globalColors.text.normal,
+            color = JewelTheme.globalColors.text.info,
             lineHeight = 20.sp
-        ),
-        modifier = Modifier.padding(bottom = 8.dp)
+        )
     )
 }
