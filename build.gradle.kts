@@ -51,14 +51,8 @@ dependencies {
             useCache = true
         }
 
-        bundledModules(
-            "intellij.libraries.skiko",
-            "intellij.libraries.compose.foundation.desktop",
-            "intellij.platform.jewel.foundation",
-            "intellij.platform.jewel.ui",
-            "intellij.platform.jewel.ideLafBridge",
-            "intellij.platform.compose"
-        )
+        @Suppress("UnstableApiUsage")
+        composeUI()
 
         testFramework(TestFrameworkType.Platform)
     }
