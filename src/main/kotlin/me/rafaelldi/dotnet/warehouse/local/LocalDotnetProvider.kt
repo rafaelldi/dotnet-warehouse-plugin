@@ -68,7 +68,7 @@ internal class LocalDotnetProvider(private val project: Project) : LocalDotnetPr
 
                 val version = line.take(spaceIndex)
                 val pathString = line.substring(spaceIndex + 2, line.length - 1)
-                val sdk = LocalSdk(version, Path.of(pathString))
+                val sdk = LocalSdk(version, Path.of(pathString).resolve(version))
 
                 add(sdk)
             }

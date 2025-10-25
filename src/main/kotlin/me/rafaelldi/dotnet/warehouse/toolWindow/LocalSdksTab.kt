@@ -70,7 +70,7 @@ private fun LocalSdkList(
                     contentPadding = PaddingValues(vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    items(localSdks, key = { it.version }) { localSdk ->
+                    items(localSdks, key = { it.pathString }) { localSdk ->
                         LocalSdkBubble(
                             localSdk,
                             Modifier.fillMaxWidth()
