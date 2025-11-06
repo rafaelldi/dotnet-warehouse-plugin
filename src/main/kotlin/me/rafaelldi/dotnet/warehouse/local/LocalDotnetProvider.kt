@@ -9,12 +9,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.toNioPathOrNull
 import com.intellij.platform.eel.EelExecApi
 import com.intellij.platform.eel.EelPlatform
+import com.intellij.platform.eel.EelUserInfo
 import com.intellij.platform.eel.ExecuteProcessOptionsBuilder
 import com.intellij.platform.eel.provider.asEelPath
+import com.intellij.platform.eel.provider.asNioPath
 import com.intellij.platform.eel.provider.getEelDescriptor
 import com.intellij.platform.eel.provider.utils.awaitProcessResult
 import com.intellij.platform.eel.provider.utils.stdoutString
-import com.intellij.util.SystemProperties
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -47,7 +48,7 @@ internal class LocalDotnetProvider(private val project: Project) : LocalDotnetPr
 
     private suspend fun findLocalSdks(): List<LocalSdk> {
         val eelApi = project.getEelDescriptor().toEelApi()
-        val executablePaths = getDotnetExecutablePaths(eelApi.platform)
+        val executablePaths = getDotnetExecutablePaths(eelApi.platform, eelApi.userInfo)
         return buildList {
             for (executablePath in executablePaths) {
                 if (!executablePath.exists()) continue
@@ -77,7 +78,7 @@ internal class LocalDotnetProvider(private val project: Project) : LocalDotnetPr
 
     private suspend fun findLocalRuntimes(): List<LocalRuntime> {
         val eelApi = project.getEelDescriptor().toEelApi()
-        val executablePaths = getDotnetExecutablePaths(eelApi.platform)
+        val executablePaths = getDotnetExecutablePaths(eelApi.platform, eelApi.userInfo)
         return buildList {
             for (executablePath in executablePaths) {
                 if (!executablePath.exists()) continue
@@ -110,24 +111,22 @@ internal class LocalDotnetProvider(private val project: Project) : LocalDotnetPr
 
 
     // https://learn.microsoft.com/en-us/dotnet/core/install/how-to-detect-installed-versions?pivots=os-linux#check-for-install-folders
-    private fun getDotnetExecutablePaths(platform: EelPlatform): List<Path> {
+    private fun getDotnetExecutablePaths(platform: EelPlatform, userInfo: EelUserInfo): List<Path> {
         when (platform) {
-            is EelPlatform.Linux -> {
-                return buildList {
-                    val userHome = SystemProperties.getUserHome()
-                    add(Path.of(userHome, ".dotnet/dotnet"))
-                    add(Path.of("/usr/lib/dotnet/dotnet"))
-                    add(Path.of("/usr/share/dotnet/dotnet"))
-                    add(Path.of("/usr/lib64/dotnet/dotnet"))
-                }
-            }
-
             is EelPlatform.Windows -> {
                 return listOf(
                     Path.of("C:\\Program Files\\dotnet\\dotnet.exe")
                 )
             }
-
+            is EelPlatform.Linux -> {
+                return buildList {
+                    val userHome = userInfo.home.asNioPath()
+                    add(userHome.resolve(".dotnet/dotnet"))
+                    add(Path.of("/usr/lib/dotnet/dotnet"))
+                    add(Path.of("/usr/share/dotnet/dotnet"))
+                    add(Path.of("/usr/lib64/dotnet/dotnet"))
+                }
+            }
             else -> {
                 return listOf(
                     Path.of("/usr/local/share/dotnet/dotnet")
