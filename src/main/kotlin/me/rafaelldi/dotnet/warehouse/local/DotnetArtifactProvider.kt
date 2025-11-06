@@ -24,43 +24,43 @@ import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
 
-internal interface LocalDotnetProviderApi {
-    val localSdkFlow: StateFlow<List<LocalSdk>>
-    suspend fun reloadLocalSdks()
+internal interface DotnetArtifactProviderApi {
+    val dotnetSdkFlow: StateFlow<List<DotnetSdk>>
+    suspend fun reloadDotnetSdks()
 }
 
 @Service(Service.Level.PROJECT)
-internal class LocalDotnetProvider(private val project: Project) : LocalDotnetProviderApi {
+internal class DotnetArtifactProvider(private val project: Project) : DotnetArtifactProviderApi {
     companion object {
-        internal fun getInstance(project: Project): LocalDotnetProvider = project.service()
+        internal fun getInstance(project: Project): DotnetArtifactProvider = project.service()
 
-        private val LOG = logger<LocalDotnetProvider>()
+        private val LOG = logger<DotnetArtifactProvider>()
 
         private const val LIST_SDKS_OPTION = "--list-sdks"
         private const val LIST_RUNTIMES_OPTION = "--list-runtimes"
     }
 
-    private val localSdks: MutableStateFlow<List<LocalSdk>> = MutableStateFlow(emptyList())
-    override val localSdkFlow: StateFlow<List<LocalSdk>> = localSdks.asStateFlow()
+    private val dotnetSdks: MutableStateFlow<List<DotnetSdk>> = MutableStateFlow(emptyList())
+    override val dotnetSdkFlow: StateFlow<List<DotnetSdk>> = dotnetSdks.asStateFlow()
 
-    override suspend fun reloadLocalSdks() {
-        val sdks = findLocalSdks()
-        localSdks.emit(sdks)
+    override suspend fun reloadDotnetSdks() {
+        val sdks = findDotnetSdks()
+        dotnetSdks.emit(sdks)
     }
 
-    private suspend fun findLocalSdks(): List<LocalSdk> {
+    private suspend fun findDotnetSdks(): List<DotnetSdk> {
         val eelApi = project.getEelDescriptor().toEelApi()
         val executablePaths = getDotnetExecutablePaths(eelApi) + getJetBrainsDotnetExecutablePaths(eelApi)
         return buildList {
             for (executablePath in executablePaths) {
                 if (!executablePath.exists()) continue
-                val sdks = findLocalSdks(eelApi.exec, executablePath)
+                val sdks = findDotnetSdks(eelApi.exec, executablePath)
                 addAll(sdks)
             }
-        }
+        }.sortedBy { it.version }
     }
 
-    private suspend fun findLocalSdks(execApi: EelExecApi, executablePath: Path): List<LocalSdk> {
+    private suspend fun findDotnetSdks(execApi: EelExecApi, executablePath: Path): List<DotnetSdk> {
         val executionResult = executeDotnetCommand(execApi, executablePath, LIST_SDKS_OPTION)
             ?: return emptyList()
 
@@ -71,26 +71,26 @@ internal class LocalDotnetProvider(private val project: Project) : LocalDotnetPr
 
                 val version = line.take(spaceIndex)
                 val pathString = line.substring(spaceIndex + 2, line.length - 1)
-                val sdk = LocalSdk(version, Path.of(pathString).resolve(version))
+                val sdk = DotnetSdk(version, Path.of(pathString).resolve(version))
 
                 add(sdk)
             }
         }
     }
 
-    private suspend fun findLocalRuntimes(): List<LocalRuntime> {
+    private suspend fun findDotnetRuntimes(): List<DotnetRuntime> {
         val eelApi = project.getEelDescriptor().toEelApi()
         val executablePaths = getDotnetExecutablePaths(eelApi) + getJetBrainsDotnetExecutablePaths(eelApi)
         return buildList {
             for (executablePath in executablePaths) {
                 if (!executablePath.exists()) continue
-                val runtimes = findLocalRuntimes(eelApi.exec, executablePath)
+                val runtimes = findDotnetRuntimes(eelApi.exec, executablePath)
                 addAll(runtimes)
             }
         }
     }
 
-    private suspend fun findLocalRuntimes(execApi: EelExecApi, executablePath: Path): List<LocalRuntime> {
+    private suspend fun findDotnetRuntimes(execApi: EelExecApi, executablePath: Path): List<DotnetRuntime> {
         val executionResult = executeDotnetCommand(execApi, executablePath, LIST_RUNTIMES_OPTION)
             ?: return emptyList()
 
@@ -104,7 +104,7 @@ internal class LocalDotnetProvider(private val project: Project) : LocalDotnetPr
                 val type = line.take(firstSpaceIndex)
                 val version = line.substring(firstSpaceIndex + 1, secondSpaceIndex)
                 val pathString = line.substring(secondSpaceIndex + 2, line.length - 1)
-                val runtime = LocalRuntime(type, version, Path.of(pathString))
+                val runtime = DotnetRuntime(type, version, Path.of(pathString))
 
                 add(runtime)
             }

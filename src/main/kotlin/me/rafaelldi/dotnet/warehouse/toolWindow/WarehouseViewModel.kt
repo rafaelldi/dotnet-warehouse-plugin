@@ -6,29 +6,29 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import me.rafaelldi.dotnet.warehouse.local.LocalDotnetProviderApi
-import me.rafaelldi.dotnet.warehouse.local.LocalSdk
+import me.rafaelldi.dotnet.warehouse.local.DotnetArtifactProviderApi
+import me.rafaelldi.dotnet.warehouse.local.DotnetSdk
 
 internal interface WarehouseViewModelApi : Disposable {
-    val localSdkFlow: StateFlow<List<LocalSdk>>
+    val dotnetSdkFlow: StateFlow<List<DotnetSdk>>
     fun onReloadLocalSdks()
-    fun onDeleteSdk(localSdk: LocalSdk)
+    fun onDeleteSdk(dotnetSdk: DotnetSdk)
 }
 
 internal class WarehouseViewModel(
     private val viewModelScope: CoroutineScope,
-    private val localDotnetProvider: LocalDotnetProviderApi
+    private val dotnetArtifactProvider: DotnetArtifactProviderApi
 ) : WarehouseViewModelApi {
 
     private var currentReloadSdksJob: Job? = null
 
-    private val _localSdkFlow = MutableStateFlow(emptyList<LocalSdk>())
-    override val localSdkFlow: StateFlow<List<LocalSdk>> = _localSdkFlow.asStateFlow()
+    private val _dotnetSdkFlow = MutableStateFlow(emptyList<DotnetSdk>())
+    override val dotnetSdkFlow: StateFlow<List<DotnetSdk>> = _dotnetSdkFlow.asStateFlow()
 
     init {
-        localDotnetProvider
-            .localSdkFlow
-            .onEach { _localSdkFlow.emit(it) }
+        dotnetArtifactProvider
+            .dotnetSdkFlow
+            .onEach { _dotnetSdkFlow.emit(it) }
             .launchIn(viewModelScope)
     }
 
@@ -36,11 +36,11 @@ internal class WarehouseViewModel(
         currentReloadSdksJob?.cancel()
 
         currentReloadSdksJob = viewModelScope.launch {
-            localDotnetProvider.reloadLocalSdks()
+            dotnetArtifactProvider.reloadDotnetSdks()
         }
     }
 
-    override fun onDeleteSdk(localSdk: LocalSdk) {
+    override fun onDeleteSdk(dotnetSdk: DotnetSdk) {
     }
 
     override fun dispose() {

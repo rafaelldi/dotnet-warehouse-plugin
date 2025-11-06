@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.PopupPositionProvider
 import me.rafaelldi.dotnet.warehouse.WarehouseBundle
-import me.rafaelldi.dotnet.warehouse.local.LocalSdk
+import me.rafaelldi.dotnet.warehouse.local.DotnetSdk
 import org.jetbrains.jewel.foundation.ExperimentalJewelApi
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.Text
@@ -33,8 +33,8 @@ import org.jetbrains.jewel.ui.theme.colorPalette
 import kotlin.io.path.absolutePathString
 
 @Composable
-internal fun LocalSdksTab(viewModel: WarehouseViewModelApi) {
-    val localSdks by viewModel.localSdkFlow.collectAsState(emptyList())
+internal fun DotnetSdksTab(viewModel: WarehouseViewModelApi) {
+    val localSdks by viewModel.dotnetSdkFlow.collectAsState(emptyList())
 
     val listState = rememberLazyListState()
 
@@ -46,7 +46,7 @@ internal fun LocalSdksTab(viewModel: WarehouseViewModelApi) {
         Modifier
             .fillMaxWidth()
     ) {
-        LocalSdkList(
+        DotnetSdkList(
             localSdks,
             listState,
             viewModel,
@@ -57,14 +57,14 @@ internal fun LocalSdksTab(viewModel: WarehouseViewModelApi) {
 }
 
 @Composable
-private fun LocalSdkList(
-    localSdks: List<LocalSdk>,
+private fun DotnetSdkList(
+    dotnetSdks: List<DotnetSdk>,
     listState: LazyListState,
     viewModel: WarehouseViewModelApi,
     modifier: Modifier
 ) {
     Box(modifier = modifier) {
-        if (localSdks.isEmpty()) {
+        if (dotnetSdks.isEmpty()) {
             EmptySdkListPlaceholder()
         } else {
             VerticallyScrollableContainer(
@@ -79,8 +79,8 @@ private fun LocalSdkList(
                     contentPadding = PaddingValues(vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    items(localSdks, key = { it.pathString }) { localSdk ->
-                        LocalSdkBubble(
+                    items(dotnetSdks, key = { it.pathString }) { localSdk ->
+                        DotnetSdkBubble(
                             localSdk,
                             viewModel,
                             Modifier.fillMaxWidth()
@@ -112,8 +112,8 @@ private fun EmptySdkListPlaceholder(
 }
 
 @Composable
-private fun LocalSdkBubble(
-    localSdk: LocalSdk,
+private fun DotnetSdkBubble(
+    dotnetSdk: DotnetSdk,
     viewModel: WarehouseViewModelApi,
     modifier: Modifier = Modifier
 ) {
@@ -155,8 +155,8 @@ private fun LocalSdkBubble(
                 )
                 .padding(16.dp)
         ) {
-            LocalSdkVersion(
-                localSdk,
+            DotnetSdkVersion(
+                dotnetSdk,
 //                onMoreClick = {
 //                    // Place popup near the top-right by using a very large X and small Y;
 //                    // the position provider will clamp it within the bubble bounds.
@@ -164,7 +164,7 @@ private fun LocalSdkBubble(
 //                    showMenuState.value = true
 //                }
             )
-            LocalSdkPath(localSdk)
+            DotnetSdkPath(dotnetSdk)
         }
     }
 
@@ -193,16 +193,16 @@ private fun LocalSdkBubble(
                 AllIconsKeys.General.Delete
             ) {
                 showPopup.value = false
-                viewModel.onDeleteSdk(localSdk)
+                viewModel.onDeleteSdk(dotnetSdk)
             }
         }
     }
 }
 
 @Composable
-private fun LocalSdkVersion(localSdk: LocalSdk) {
+private fun DotnetSdkVersion(dotnetSdk: DotnetSdk) {
     Text(
-        text = localSdk.version,
+        text = dotnetSdk.version,
         style = JewelTheme.defaultTextStyle.copy(
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
@@ -214,9 +214,9 @@ private fun LocalSdkVersion(localSdk: LocalSdk) {
 }
 
 @Composable
-private fun LocalSdkPath(localSdk: LocalSdk) {
+private fun DotnetSdkPath(dotnetSdk: DotnetSdk) {
     Text(
-        text = localSdk.path.absolutePathString(),
+        text = dotnetSdk.path.absolutePathString(),
         style = JewelTheme.defaultTextStyle.copy(
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal,
