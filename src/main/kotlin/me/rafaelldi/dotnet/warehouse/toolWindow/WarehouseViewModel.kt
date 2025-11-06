@@ -1,7 +1,6 @@
 package me.rafaelldi.dotnet.warehouse.toolWindow
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.project.Project
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -12,10 +11,11 @@ import me.rafaelldi.dotnet.warehouse.local.LocalSdk
 
 internal interface WarehouseViewModelApi : Disposable {
     val localSdkFlow: StateFlow<List<LocalSdk>>
+    fun onReloadLocalSdks()
+    fun onDeleteSdk(localSdk: LocalSdk)
 }
 
 internal class WarehouseViewModel(
-    val project: Project,
     private val viewModelScope: CoroutineScope,
     private val localDotnetProvider: LocalDotnetProviderApi
 ) : WarehouseViewModelApi {
@@ -32,7 +32,7 @@ internal class WarehouseViewModel(
             .launchIn(viewModelScope)
     }
 
-    internal fun onReloadLocalSdks() {
+    override fun onReloadLocalSdks() {
         currentReloadSdksJob?.cancel()
 
         currentReloadSdksJob = viewModelScope.launch {
@@ -40,7 +40,7 @@ internal class WarehouseViewModel(
         }
     }
 
-    internal fun onSdkSelected(index: Int) {
+    override fun onDeleteSdk(localSdk: LocalSdk) {
     }
 
     override fun dispose() {

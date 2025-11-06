@@ -16,7 +16,6 @@ internal class WarehouseToolWindowFactory : ToolWindowFactory, DumbAware {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val viewModel = WarehouseViewModel(
-            project,
             project.service<WarehouseService>().createScope(::WarehouseViewModel.name),
             LocalDotnetProvider.getInstance(project)
         )
