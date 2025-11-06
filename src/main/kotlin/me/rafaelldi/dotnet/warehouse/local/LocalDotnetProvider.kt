@@ -6,9 +6,9 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.toNioPathOrNull
 import com.intellij.platform.eel.EelExecApi
+import com.intellij.platform.eel.EelPlatform
 import com.intellij.platform.eel.ExecuteProcessOptionsBuilder
 import com.intellij.platform.eel.provider.asEelPath
 import com.intellij.platform.eel.provider.getEelDescriptor
@@ -46,12 +46,12 @@ internal class LocalDotnetProvider(private val project: Project) : LocalDotnetPr
     }
 
     private suspend fun findLocalSdks(): List<LocalSdk> {
-        val execApi = project.getEelDescriptor().toEelApi().exec
-        val executablePaths = getDotnetExecutablePaths()
+        val eelApi = project.getEelDescriptor().toEelApi()
+        val executablePaths = getDotnetExecutablePaths(eelApi.platform)
         return buildList {
             for (executablePath in executablePaths) {
                 if (!executablePath.exists()) continue
-                val sdks = findLocalSdks(execApi, executablePath)
+                val sdks = findLocalSdks(eelApi.exec, executablePath)
                 addAll(sdks)
             }
         }
@@ -76,12 +76,12 @@ internal class LocalDotnetProvider(private val project: Project) : LocalDotnetPr
     }
 
     private suspend fun findLocalRuntimes(): List<LocalRuntime> {
-        val execApi = project.getEelDescriptor().toEelApi().exec
-        val executablePaths = getDotnetExecutablePaths()
+        val eelApi = project.getEelDescriptor().toEelApi()
+        val executablePaths = getDotnetExecutablePaths(eelApi.platform)
         return buildList {
             for (executablePath in executablePaths) {
                 if (!executablePath.exists()) continue
-                val runtimes = findLocalRuntimes(execApi, executablePath)
+                val runtimes = findLocalRuntimes(eelApi.exec, executablePath)
                 addAll(runtimes)
             }
         }
@@ -110,23 +110,29 @@ internal class LocalDotnetProvider(private val project: Project) : LocalDotnetPr
 
 
     // https://learn.microsoft.com/en-us/dotnet/core/install/how-to-detect-installed-versions?pivots=os-linux#check-for-install-folders
-    private fun getDotnetExecutablePaths(): List<Path> {
-        if (SystemInfo.isLinux) {
-            return buildList {
-                val userHome = SystemProperties.getUserHome()
-                add(Path.of(userHome, ".dotnet/dotnet"))
-                add(Path.of("/usr/lib/dotnet/dotnet"))
-                add(Path.of("/usr/share/dotnet/dotnet"))
-                add(Path.of("/usr/lib64/dotnet/dotnet"))
+    private fun getDotnetExecutablePaths(platform: EelPlatform): List<Path> {
+        when (platform) {
+            is EelPlatform.Linux -> {
+                return buildList {
+                    val userHome = SystemProperties.getUserHome()
+                    add(Path.of(userHome, ".dotnet/dotnet"))
+                    add(Path.of("/usr/lib/dotnet/dotnet"))
+                    add(Path.of("/usr/share/dotnet/dotnet"))
+                    add(Path.of("/usr/lib64/dotnet/dotnet"))
+                }
             }
-        } else if (SystemInfo.isMac) {
-            return listOf(
-                Path.of("/usr/local/share/dotnet/dotnet")
-            )
-        } else {
-            return listOf(
-                Path.of("C:\\Program Files\\dotnet\\dotnet.exe")
-            )
+
+            is EelPlatform.Windows -> {
+                return listOf(
+                    Path.of("C:\\Program Files\\dotnet\\dotnet.exe")
+                )
+            }
+
+            else -> {
+                return listOf(
+                    Path.of("/usr/local/share/dotnet/dotnet")
+                )
+            }
         }
     }
 
