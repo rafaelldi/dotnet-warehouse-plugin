@@ -27,6 +27,7 @@ import kotlin.io.path.listDirectoryEntries
 internal interface DotnetArtifactProviderApi {
     val dotnetSdkFlow: StateFlow<List<DotnetSdk>>
     suspend fun reloadDotnetSdks()
+    suspend fun deleteSdk(dotnetSdk: DotnetSdk)
 }
 
 @Service(Service.Level.PROJECT)
@@ -46,6 +47,9 @@ internal class DotnetArtifactProvider(private val project: Project) : DotnetArti
     override suspend fun reloadDotnetSdks() {
         val sdks = findDotnetSdks()
         dotnetSdks.emit(sdks)
+    }
+
+    override suspend fun deleteSdk(dotnetSdk: DotnetSdk) {
     }
 
     private suspend fun findDotnetSdks(): List<DotnetSdk> {

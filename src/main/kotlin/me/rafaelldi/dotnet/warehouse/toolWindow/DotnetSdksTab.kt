@@ -13,7 +13,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.onPointerEvent
@@ -23,14 +25,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.PopupPositionProvider
 import me.rafaelldi.dotnet.warehouse.WarehouseBundle
+import me.rafaelldi.dotnet.warehouse.local.DotnetArtifact
 import me.rafaelldi.dotnet.warehouse.local.DotnetSdk
 import org.jetbrains.jewel.foundation.ExperimentalJewelApi
 import org.jetbrains.jewel.foundation.theme.JewelTheme
+import org.jetbrains.jewel.ui.component.ActionButton
+import org.jetbrains.jewel.ui.component.Icon
 import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.VerticallyScrollableContainer
 import org.jetbrains.jewel.ui.icons.AllIconsKeys
 import org.jetbrains.jewel.ui.theme.colorPalette
-import kotlin.io.path.absolutePathString
 
 @Composable
 internal fun DotnetSdksTab(viewModel: WarehouseViewModelApi) {
@@ -155,16 +159,29 @@ private fun DotnetSdkBubble(
                 )
                 .padding(16.dp)
         ) {
-            DotnetSdkVersion(
-                dotnetSdk,
-//                onMoreClick = {
-//                    // Place popup near the top-right by using a very large X and small Y;
-//                    // the position provider will clamp it within the bubble bounds.
-//                    clickOffsetState.value = Offset(Float.MAX_VALUE, 0f)
-//                    showMenuState.value = true
-//                }
-            )
-            DotnetSdkPath(dotnetSdk)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                DotnetArtifactVersion(dotnetSdk)
+
+                ActionButton(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(Color.Transparent),
+                    tooltip = { Text("Show options") },
+                    onClick = {
+                        showPopup.value = true
+                    },
+                ) {
+                    Icon(
+                        key = AllIconsKeys.Actions.More,
+                        contentDescription = "Options",
+                        tint = Color.White
+                    )
+                }
+            }
+            DotnetArtifactPath(dotnetSdk)
         }
     }
 
@@ -200,23 +217,23 @@ private fun DotnetSdkBubble(
 }
 
 @Composable
-private fun DotnetSdkVersion(dotnetSdk: DotnetSdk) {
+private fun DotnetArtifactVersion(dotnetArtifact: DotnetArtifact) {
     Text(
-        text = dotnetSdk.version,
+        text = dotnetArtifact.version,
         style = JewelTheme.defaultTextStyle.copy(
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             color = JewelTheme.globalColors.text.normal,
             lineHeight = 20.sp
         ),
-        modifier = Modifier.padding(bottom = 8.dp)
+        modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
     )
 }
 
 @Composable
-private fun DotnetSdkPath(dotnetSdk: DotnetSdk) {
+private fun DotnetArtifactPath(dotnetArtifact: DotnetArtifact) {
     Text(
-        text = dotnetSdk.path.absolutePathString(),
+        text = dotnetArtifact.pathString,
         style = JewelTheme.defaultTextStyle.copy(
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal,

@@ -41,6 +41,10 @@ internal class WarehouseViewModel(
     }
 
     override fun onDeleteSdk(dotnetSdk: DotnetSdk) {
+        viewModelScope.launch {
+            dotnetArtifactProvider.deleteSdk(dotnetSdk)
+        }
+        onReloadLocalSdks()
     }
 
     override fun dispose() {
