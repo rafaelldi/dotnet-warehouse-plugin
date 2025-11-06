@@ -1,6 +1,7 @@
 package me.rafaelldi.dotnet.warehouse.toolWindow
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.project.Project
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -14,6 +15,7 @@ internal interface WarehouseViewModelApi : Disposable {
 }
 
 internal class WarehouseViewModel(
+    val project: Project,
     private val viewModelScope: CoroutineScope,
     private val localDotnetProvider: LocalDotnetProviderApi
 ) : WarehouseViewModelApi {

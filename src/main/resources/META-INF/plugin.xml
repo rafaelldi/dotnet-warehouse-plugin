@@ -16,5 +16,6 @@
                     icon="me.rafaelldi.dotnet.warehouse.WarehouseIcons.WarehouseWindow"
                     anchor="right"
                     doNotActivateOnStart="true"/>
+        <notificationGroup id="Dotnet Warehouse" displayType="BALLOON" isLogByDefault="true"/>
     </extensions>
 </idea-plugin>
