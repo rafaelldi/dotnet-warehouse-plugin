@@ -32,7 +32,7 @@ fun ContextPopupMenu(
 @Composable
 fun ContextPopupMenuItem(
     actionText: String,
-    actionIcon: IconKey,
+    actionIcon: IconKey? = null,
     onClick: () -> Unit,
 ) {
     Row(
@@ -42,13 +42,15 @@ fun ContextPopupMenuItem(
             .onClick { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            actionIcon,
-            contentDescription = null,
-            modifier = Modifier.size(16.dp)
-        )
+        if (actionIcon != null) {
+            Icon(
+                actionIcon,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
+            )
 
-        Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+        }
 
         Text(
             text = actionText,

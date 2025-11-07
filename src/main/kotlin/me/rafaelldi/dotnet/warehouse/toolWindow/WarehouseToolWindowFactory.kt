@@ -7,7 +7,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import me.rafaelldi.dotnet.warehouse.WarehouseService
-import me.rafaelldi.dotnet.warehouse.local.LocalDotnetProvider
+import me.rafaelldi.dotnet.warehouse.local.DotnetArtifactProvider
 import org.jetbrains.jewel.bridge.addComposeTab
 
 
@@ -17,12 +17,12 @@ internal class WarehouseToolWindowFactory : ToolWindowFactory, DumbAware {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val viewModel = WarehouseViewModel(
             project.service<WarehouseService>().createScope(::WarehouseViewModel.name),
-            LocalDotnetProvider.getInstance(project)
+            DotnetArtifactProvider.getInstance(project)
         )
         Disposer.register(toolWindow.disposable, viewModel)
 
         toolWindow.addComposeTab("SDKs") {
-            LocalSdksTab(viewModel)
+            DotnetSdksTab(viewModel)
         }
     }
 }
