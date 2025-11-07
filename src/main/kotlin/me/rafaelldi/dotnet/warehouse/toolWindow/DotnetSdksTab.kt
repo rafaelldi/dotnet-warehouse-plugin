@@ -131,6 +131,8 @@ private fun DotnetSdkBubble(
     val showPopup = remember { mutableStateOf(false) }
     val popupPosition = remember { mutableStateOf(IntOffset.Zero) }
     val itemPosition = remember { mutableStateOf(Offset.Zero) }
+    val actionButtonPosition = remember { mutableStateOf(Offset.Zero) }
+    val actionButtonSize = remember { mutableStateOf(IntSize.Zero) }
 
     Row(
         modifier = modifier
@@ -141,10 +143,11 @@ private fun DotnetSdkBubble(
             .onPointerEvent(PointerEventType.Press) { pointerEvent ->
                 if (!pointerEvent.buttons.isSecondaryPressed) return@onPointerEvent
 
+                val pos = itemPosition.value
                 val clickOffset = pointerEvent.changes.first().position
                 popupPosition.value = IntOffset(
-                    x = (itemPosition.value.x + clickOffset.x).toInt(),
-                    y = (itemPosition.value.y + clickOffset.y).toInt()
+                    x = (pos.x + clickOffset.x).toInt(),
+                    y = (pos.y + clickOffset.y).toInt()
                 )
                 showPopup.value = true
             },
@@ -168,9 +171,19 @@ private fun DotnetSdkBubble(
                 ActionButton(
                     modifier = Modifier
                         .clip(RoundedCornerShape(2.dp))
-                        .background(Color.Transparent),
+                        .background(Color.Transparent)
+                        .onGloballyPositioned { coordinates ->
+                            actionButtonPosition.value = coordinates.positionInWindow()
+                            actionButtonSize.value = coordinates.size
+                        },
                     tooltip = { Text("Show options") },
                     onClick = {
+                        val pos = actionButtonPosition.value
+                        val size = actionButtonSize.value
+                        popupPosition.value = IntOffset(
+                            x = pos.x.toInt(),
+                            y = (pos.y + size.height).toInt()
+                        )
                         showPopup.value = true
                     },
                 ) {
