@@ -61,7 +61,7 @@ internal class DotnetArtifactProvider(private val project: Project) : DotnetArti
                 val sdks = findDotnetSdks(eelApi.exec, executablePath)
                 addAll(sdks)
             }
-        }.sortedBy { it.version }
+        }.sortedWith(compareBy({ it.major }, { it.minor }, { it.patch }, { it.preRelease }))
     }
 
     private suspend fun findDotnetSdks(execApi: EelExecApi, executablePath: Path): List<DotnetSdk> {
@@ -91,7 +91,7 @@ internal class DotnetArtifactProvider(private val project: Project) : DotnetArti
                 val runtimes = findDotnetRuntimes(eelApi.exec, executablePath)
                 addAll(runtimes)
             }
-        }
+        }.sortedWith(compareBy({ it.major }, { it.minor }, { it.patch }, { it.preRelease }))
     }
 
     private suspend fun findDotnetRuntimes(execApi: EelExecApi, executablePath: Path): List<DotnetRuntime> {

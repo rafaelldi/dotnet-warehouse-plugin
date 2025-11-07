@@ -2,9 +2,15 @@ package me.rafaelldi.dotnet.warehouse.local
 
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
+import me.rafaelldi.dotnet.warehouse.util.parseSemanticVersion
+import me.rafaelldi.dotnet.warehouse.util.extractPreRelease
 
 internal interface DotnetArtifact {
     val version: String
+    val major: Int
+    val minor: Int
+    val patch: Int
+    val preRelease: String?
     val pathString: String
 }
 
@@ -13,6 +19,19 @@ internal data class DotnetSdk(
     val path: Path
 ) : DotnetArtifact {
     override val pathString: String = path.absolutePathString()
+
+    override val major: Int
+    override val minor: Int
+    override val patch: Int
+    override val preRelease: String?
+
+    init {
+        val (maj, min, pat) = parseSemanticVersion(version)
+        major = maj
+        minor = min
+        patch = pat
+        preRelease = extractPreRelease(version)
+    }
 }
 
 internal data class DotnetRuntime(
@@ -21,4 +40,17 @@ internal data class DotnetRuntime(
     val path: Path
 ) : DotnetArtifact {
     override val pathString: String = path.absolutePathString()
+
+    override val major: Int
+    override val minor: Int
+    override val patch: Int
+    override val preRelease: String?
+
+    init {
+        val (maj, min, pat) = parseSemanticVersion(version)
+        major = maj
+        minor = min
+        patch = pat
+        preRelease = extractPreRelease(version)
+    }
 }
