@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.PopupPositionProvider
 import me.rafaelldi.dotnet.warehouse.WarehouseBundle
-import me.rafaelldi.dotnet.warehouse.local.DotnetArtifact
+import me.rafaelldi.dotnet.warehouse.local.DotnetCargo
 import me.rafaelldi.dotnet.warehouse.local.DotnetSdk
 import org.jetbrains.jewel.foundation.ExperimentalJewelApi
 import org.jetbrains.jewel.foundation.theme.JewelTheme
@@ -37,7 +37,7 @@ import org.jetbrains.jewel.ui.icons.AllIconsKeys
 import org.jetbrains.jewel.ui.theme.colorPalette
 
 @Composable
-internal fun DotnetSdksTab(viewModel: WarehouseViewModelApi) {
+internal fun DotnetSdkRack(viewModel: DotnetRackViewModelApi) {
     val localSdks by viewModel.dotnetSdkFlow.collectAsState(emptyList())
 
     val listState = rememberLazyListState()
@@ -50,7 +50,7 @@ internal fun DotnetSdksTab(viewModel: WarehouseViewModelApi) {
         Modifier
             .fillMaxWidth()
     ) {
-        DotnetSdkList(
+        DotnetSdkShelf(
             localSdks,
             listState,
             viewModel,
@@ -61,10 +61,10 @@ internal fun DotnetSdksTab(viewModel: WarehouseViewModelApi) {
 }
 
 @Composable
-private fun DotnetSdkList(
+private fun DotnetSdkShelf(
     dotnetSdks: List<DotnetSdk>,
     listState: LazyListState,
-    viewModel: WarehouseViewModelApi,
+    viewModel: DotnetRackViewModelApi,
     modifier: Modifier
 ) {
     Box(modifier = modifier) {
@@ -84,7 +84,7 @@ private fun DotnetSdkList(
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     items(dotnetSdks, key = { it.pathString }) { localSdk ->
-                        DotnetSdkBubble(
+                        DotnetSdkPallet(
                             localSdk,
                             viewModel,
                             Modifier.fillMaxWidth()
@@ -116,9 +116,9 @@ private fun EmptySdkListPlaceholder(
 }
 
 @Composable
-private fun DotnetSdkBubble(
+private fun DotnetSdkPallet(
     dotnetSdk: DotnetSdk,
-    viewModel: WarehouseViewModelApi,
+    viewModel: DotnetRackViewModelApi,
     modifier: Modifier = Modifier
 ) {
     val localSdkShape = RoundedCornerShape(
@@ -166,7 +166,7 @@ private fun DotnetSdkBubble(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                DotnetArtifactVersion(dotnetSdk)
+                DotnetCargoVersion(dotnetSdk)
 
                 ActionButton(
                     modifier = Modifier
@@ -194,7 +194,7 @@ private fun DotnetSdkBubble(
                     )
                 }
             }
-            DotnetArtifactPath(dotnetSdk)
+            DotnetCargoPath(dotnetSdk)
         }
     }
 
@@ -230,9 +230,9 @@ private fun DotnetSdkBubble(
 }
 
 @Composable
-private fun DotnetArtifactVersion(dotnetArtifact: DotnetArtifact) {
+private fun DotnetCargoVersion(dotnetCargo: DotnetCargo) {
     Text(
-        text = dotnetArtifact.version,
+        text = dotnetCargo.version,
         style = JewelTheme.defaultTextStyle.copy(
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
@@ -244,9 +244,9 @@ private fun DotnetArtifactVersion(dotnetArtifact: DotnetArtifact) {
 }
 
 @Composable
-private fun DotnetArtifactPath(dotnetArtifact: DotnetArtifact) {
+private fun DotnetCargoPath(dotnetCargo: DotnetCargo) {
     Text(
-        text = dotnetArtifact.pathString,
+        text = dotnetCargo.pathString,
         style = JewelTheme.defaultTextStyle.copy(
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal,

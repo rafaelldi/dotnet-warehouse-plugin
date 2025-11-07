@@ -24,18 +24,18 @@ import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
 
-internal interface DotnetArtifactProviderApi {
+internal interface DotnetForkliftApi {
     val dotnetSdkFlow: StateFlow<List<DotnetSdk>>
     suspend fun reloadDotnetSdks()
     suspend fun deleteSdk(dotnetSdk: DotnetSdk)
 }
 
 @Service(Service.Level.PROJECT)
-internal class DotnetArtifactProvider(private val project: Project) : DotnetArtifactProviderApi {
+internal class DotnetForklift(private val project: Project) : DotnetForkliftApi {
     companion object {
-        internal fun getInstance(project: Project): DotnetArtifactProvider = project.service()
+        internal fun getInstance(project: Project): DotnetForklift = project.service()
 
-        private val LOG = logger<DotnetArtifactProvider>()
+        private val LOG = logger<DotnetForklift>()
 
         private const val LIST_SDKS_OPTION = "--list-sdks"
         private const val LIST_RUNTIMES_OPTION = "--list-runtimes"

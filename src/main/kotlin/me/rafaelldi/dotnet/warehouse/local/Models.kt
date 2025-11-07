@@ -5,7 +5,7 @@ import kotlin.io.path.absolutePathString
 import me.rafaelldi.dotnet.warehouse.util.parseSemanticVersion
 import me.rafaelldi.dotnet.warehouse.util.extractPreRelease
 
-internal interface DotnetArtifact {
+internal interface DotnetCargo {
     val version: String
     val major: Int
     val minor: Int
@@ -17,7 +17,7 @@ internal interface DotnetArtifact {
 internal data class DotnetSdk(
     override val version: String,
     val path: Path
-) : DotnetArtifact {
+) : DotnetCargo {
     override val pathString: String = path.absolutePathString()
 
     override val major: Int
@@ -38,7 +38,7 @@ internal data class DotnetRuntime(
     val type: String,
     override val version: String,
     val path: Path
-) : DotnetArtifact {
+) : DotnetCargo {
     override val pathString: String = path.absolutePathString()
 
     override val major: Int

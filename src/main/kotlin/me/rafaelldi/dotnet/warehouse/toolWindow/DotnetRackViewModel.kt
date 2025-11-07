@@ -6,19 +6,19 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import me.rafaelldi.dotnet.warehouse.local.DotnetArtifactProviderApi
+import me.rafaelldi.dotnet.warehouse.local.DotnetForkliftApi
 import me.rafaelldi.dotnet.warehouse.local.DotnetSdk
 
-internal interface WarehouseViewModelApi : Disposable {
+internal interface DotnetRackViewModelApi : Disposable {
     val dotnetSdkFlow: StateFlow<List<DotnetSdk>>
     fun onReloadLocalSdks()
     fun onDeleteSdk(dotnetSdk: DotnetSdk)
 }
 
-internal class WarehouseViewModel(
+internal class DotnetRackViewModel(
     private val viewModelScope: CoroutineScope,
-    private val dotnetArtifactProvider: DotnetArtifactProviderApi
-) : WarehouseViewModelApi {
+    private val dotnetForklift: DotnetForkliftApi
+) : DotnetRackViewModelApi {
 
     private var currentReloadSdksJob: Job? = null
 
@@ -26,7 +26,7 @@ internal class WarehouseViewModel(
     override val dotnetSdkFlow: StateFlow<List<DotnetSdk>> = _dotnetSdkFlow.asStateFlow()
 
     init {
-        dotnetArtifactProvider
+        dotnetForklift
             .dotnetSdkFlow
             .onEach { _dotnetSdkFlow.emit(it) }
             .launchIn(viewModelScope)
@@ -36,13 +36,13 @@ internal class WarehouseViewModel(
         currentReloadSdksJob?.cancel()
 
         currentReloadSdksJob = viewModelScope.launch {
-            dotnetArtifactProvider.reloadDotnetSdks()
+            dotnetForklift.reloadDotnetSdks()
         }
     }
 
     override fun onDeleteSdk(dotnetSdk: DotnetSdk) {
         viewModelScope.launch {
-            dotnetArtifactProvider.deleteSdk(dotnetSdk)
+            dotnetForklift.deleteSdk(dotnetSdk)
         }
         onReloadLocalSdks()
     }
