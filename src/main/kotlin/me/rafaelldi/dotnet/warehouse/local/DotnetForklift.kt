@@ -56,15 +56,19 @@ internal class DotnetForklift(private val project: Project) : DotnetForkliftApi 
         val eelApi = project.getEelDescriptor().toEelApi()
         val executablePaths = getDotnetExecutablePaths(eelApi) + getJetBrainsDotnetExecutablePaths(eelApi)
         return buildList {
-            for (executablePath in executablePaths) {
+            for ((executablePath, installationType) in executablePaths) {
                 if (!executablePath.exists()) continue
-                val sdks = findDotnetSdks(eelApi.exec, executablePath)
+                val sdks = findDotnetSdks(eelApi.exec, executablePath, installationType)
                 addAll(sdks)
             }
         }.sortedWith(compareBy({ it.major }, { it.minor }, { it.patch }, { it.preRelease }))
     }
 
-    private suspend fun findDotnetSdks(execApi: EelExecApi, executablePath: Path): List<DotnetSdk> {
+    private suspend fun findDotnetSdks(
+        execApi: EelExecApi,
+        executablePath: Path,
+        installationType: DotnetInstallationType
+    ): List<DotnetSdk> {
         val executionResult = executeDotnetCommand(execApi, executablePath, LIST_SDKS_OPTION)
             ?: return emptyList()
 
@@ -75,7 +79,7 @@ internal class DotnetForklift(private val project: Project) : DotnetForkliftApi 
 
                 val version = line.take(spaceIndex)
                 val pathString = line.substring(spaceIndex + 2, line.length - 1)
-                val sdk = DotnetSdk(version, Path.of(pathString).resolve(version))
+                val sdk = DotnetSdk(version, Path.of(pathString).resolve(version), installationType)
 
                 add(sdk)
             }
@@ -86,15 +90,19 @@ internal class DotnetForklift(private val project: Project) : DotnetForkliftApi 
         val eelApi = project.getEelDescriptor().toEelApi()
         val executablePaths = getDotnetExecutablePaths(eelApi) + getJetBrainsDotnetExecutablePaths(eelApi)
         return buildList {
-            for (executablePath in executablePaths) {
+            for ((executablePath, installationType) in executablePaths) {
                 if (!executablePath.exists()) continue
-                val runtimes = findDotnetRuntimes(eelApi.exec, executablePath)
+                val runtimes = findDotnetRuntimes(eelApi.exec, executablePath, installationType)
                 addAll(runtimes)
             }
         }.sortedWith(compareBy({ it.major }, { it.minor }, { it.patch }, { it.preRelease }))
     }
 
-    private suspend fun findDotnetRuntimes(execApi: EelExecApi, executablePath: Path): List<DotnetRuntime> {
+    private suspend fun findDotnetRuntimes(
+        execApi: EelExecApi,
+        executablePath: Path,
+        installationType: DotnetInstallationType
+    ): List<DotnetRuntime> {
         val executionResult = executeDotnetCommand(execApi, executablePath, LIST_RUNTIMES_OPTION)
             ?: return emptyList()
 
@@ -108,7 +116,7 @@ internal class DotnetForklift(private val project: Project) : DotnetForkliftApi 
                 val type = line.take(firstSpaceIndex)
                 val version = line.substring(firstSpaceIndex + 1, secondSpaceIndex)
                 val pathString = line.substring(secondSpaceIndex + 2, line.length - 1)
-                val runtime = DotnetRuntime(type, version, Path.of(pathString))
+                val runtime = DotnetRuntime(type, version, Path.of(pathString), installationType)
 
                 add(runtime)
             }
@@ -117,33 +125,35 @@ internal class DotnetForklift(private val project: Project) : DotnetForkliftApi 
 
 
     // https://learn.microsoft.com/en-us/dotnet/core/install/how-to-detect-installed-versions?pivots=os-linux#check-for-install-folders
-    private fun getDotnetExecutablePaths(eelApi: EelApi): List<Path> {
+    private fun getDotnetExecutablePaths(eelApi: EelApi): List<Pair<Path, DotnetInstallationType>> {
         when (eelApi.platform) {
             is EelPlatform.Windows -> {
                 return buildList {
-                    add(Path.of("C:\\Program Files\\dotnet\\dotnet.exe"))
+                    add(Path.of("C:\\Program Files\\dotnet\\dotnet.exe") to DotnetInstallationType.Default)
                 }
             }
 
             is EelPlatform.Linux -> {
                 return buildList {
                     val userHome = eelApi.userInfo.home.asNioPath()
-                    add(userHome.resolve(".dotnet/dotnet"))
-                    add(Path.of("/usr/lib/dotnet/dotnet"))
-                    add(Path.of("/usr/share/dotnet/dotnet"))
-                    add(Path.of("/usr/lib64/dotnet/dotnet"))
+                    add(userHome.resolve(".dotnet/dotnet") to DotnetInstallationType.Manual)
+                    add(Path.of("/usr/lib/dotnet/dotnet") to DotnetInstallationType.Manual)
+                    add(Path.of("/usr/share/dotnet/dotnet") to DotnetInstallationType.Manual)
+                    add(Path.of("/usr/lib64/dotnet/dotnet") to DotnetInstallationType.Default)
                 }
             }
 
             else -> {
                 return buildList {
-                    add(Path.of("/usr/local/share/dotnet/dotnet"))
+                    val userHome = eelApi.userInfo.home.asNioPath()
+                    add(userHome.resolve(".dotnet/dotnet") to DotnetInstallationType.Manual)
+                    add(Path.of("/usr/local/share/dotnet/dotnet") to DotnetInstallationType.Default)
                 }
             }
         }
     }
 
-    private fun getJetBrainsDotnetExecutablePaths(eelApi: EelApi): List<Path> {
+    private fun getJetBrainsDotnetExecutablePaths(eelApi: EelApi): List<Pair<Path, DotnetInstallationType>> {
         val dotnetCmdPath = when (eelApi.platform) {
             is EelPlatform.Windows -> {
                 val appData = System.getenv("LOCALAPPDATA")
@@ -162,7 +172,7 @@ internal class DotnetForklift(private val project: Project) : DotnetForkliftApi 
 
         return buildList {
             for (folder in dotnetCmdPath.listDirectoryEntries().filter { it.isDirectory() }) {
-                add(folder.resolve(executable))
+                add(folder.resolve(executable) to DotnetInstallationType.Rider)
             }
         }
     }
