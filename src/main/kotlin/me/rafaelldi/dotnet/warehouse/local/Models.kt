@@ -12,13 +12,13 @@ internal interface DotnetCargo {
     val patch: Int
     val preRelease: String?
     val pathString: String
-    val installationType: DotnetInstallationType
+    val installationType: InstallationType
 }
 
 internal data class DotnetSdk(
     override val version: String,
     val path: Path,
-    override val installationType: DotnetInstallationType
+    override val installationType: InstallationType
 ) : DotnetCargo {
     override val pathString: String = path.absolutePathString()
 
@@ -40,7 +40,7 @@ internal data class DotnetRuntime(
     val type: String,
     override val version: String,
     val path: Path,
-    override val installationType: DotnetInstallationType
+    override val installationType: InstallationType
 ) : DotnetCargo {
     override val pathString: String = path.absolutePathString()
 

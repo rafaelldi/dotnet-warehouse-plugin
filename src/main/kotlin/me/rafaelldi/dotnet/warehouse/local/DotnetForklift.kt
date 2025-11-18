@@ -67,7 +67,7 @@ internal class DotnetForklift(private val project: Project) : DotnetForkliftApi 
     private suspend fun findDotnetSdks(
         execApi: EelExecApi,
         executablePath: Path,
-        installationType: DotnetInstallationType
+        installationType: InstallationType
     ): List<DotnetSdk> {
         val executionResult = executeDotnetCommand(execApi, executablePath, LIST_SDKS_OPTION)
             ?: return emptyList()
@@ -101,7 +101,7 @@ internal class DotnetForklift(private val project: Project) : DotnetForkliftApi 
     private suspend fun findDotnetRuntimes(
         execApi: EelExecApi,
         executablePath: Path,
-        installationType: DotnetInstallationType
+        installationType: InstallationType
     ): List<DotnetRuntime> {
         val executionResult = executeDotnetCommand(execApi, executablePath, LIST_RUNTIMES_OPTION)
             ?: return emptyList()
@@ -125,35 +125,35 @@ internal class DotnetForklift(private val project: Project) : DotnetForkliftApi 
 
 
     // https://learn.microsoft.com/en-us/dotnet/core/install/how-to-detect-installed-versions?pivots=os-linux#check-for-install-folders
-    private fun getDotnetExecutablePaths(eelApi: EelApi): List<Pair<Path, DotnetInstallationType>> {
+    private fun getDotnetExecutablePaths(eelApi: EelApi): List<Pair<Path, InstallationType>> {
         when (eelApi.platform) {
             is EelPlatform.Windows -> {
                 return buildList {
-                    add(Path.of("C:\\Program Files\\dotnet\\dotnet.exe") to DotnetInstallationType.Default)
+                    add(Path.of("C:\\Program Files\\dotnet\\dotnet.exe") to InstallationType.Default)
                 }
             }
 
             is EelPlatform.Linux -> {
                 return buildList {
                     val userHome = eelApi.userInfo.home.asNioPath()
-                    add(userHome.resolve(".dotnet/dotnet") to DotnetInstallationType.Manual)
-                    add(Path.of("/usr/lib/dotnet/dotnet") to DotnetInstallationType.Manual)
-                    add(Path.of("/usr/share/dotnet/dotnet") to DotnetInstallationType.Manual)
-                    add(Path.of("/usr/lib64/dotnet/dotnet") to DotnetInstallationType.Default)
+                    add(userHome.resolve(".dotnet/dotnet") to InstallationType.Manual)
+                    add(Path.of("/usr/lib/dotnet/dotnet") to InstallationType.Manual)
+                    add(Path.of("/usr/share/dotnet/dotnet") to InstallationType.Manual)
+                    add(Path.of("/usr/lib64/dotnet/dotnet") to InstallationType.Default)
                 }
             }
 
             else -> {
                 return buildList {
                     val userHome = eelApi.userInfo.home.asNioPath()
-                    add(userHome.resolve(".dotnet/dotnet") to DotnetInstallationType.Manual)
-                    add(Path.of("/usr/local/share/dotnet/dotnet") to DotnetInstallationType.Default)
+                    add(userHome.resolve(".dotnet/dotnet") to InstallationType.Manual)
+                    add(Path.of("/usr/local/share/dotnet/dotnet") to InstallationType.Default)
                 }
             }
         }
     }
 
-    private fun getJetBrainsDotnetExecutablePaths(eelApi: EelApi): List<Pair<Path, DotnetInstallationType>> {
+    private fun getJetBrainsDotnetExecutablePaths(eelApi: EelApi): List<Pair<Path, InstallationType>> {
         val dotnetCmdPath = when (eelApi.platform) {
             is EelPlatform.Windows -> {
                 val appData = System.getenv("LOCALAPPDATA")
@@ -172,7 +172,7 @@ internal class DotnetForklift(private val project: Project) : DotnetForkliftApi 
 
         return buildList {
             for (folder in dotnetCmdPath.listDirectoryEntries().filter { it.isDirectory() }) {
-                add(folder.resolve(executable) to DotnetInstallationType.Rider)
+                add(folder.resolve(executable) to InstallationType.Rider)
             }
         }
     }
