@@ -25,8 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.PopupPositionProvider
 import me.rafaelldi.dotnet.warehouse.WarehouseBundle
-import me.rafaelldi.dotnet.warehouse.local.DotnetCargo
-import me.rafaelldi.dotnet.warehouse.local.DotnetSdk
+import me.rafaelldi.dotnet.warehouse.forklift.DotnetCargo
+import me.rafaelldi.dotnet.warehouse.forklift.DotnetSdk
 import org.jetbrains.jewel.foundation.ExperimentalJewelApi
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.ActionButton

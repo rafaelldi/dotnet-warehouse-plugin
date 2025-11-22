@@ -1,4 +1,4 @@
-package me.rafaelldi.dotnet.warehouse.local
+package me.rafaelldi.dotnet.warehouse.forklift
 
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString

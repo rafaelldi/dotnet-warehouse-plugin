@@ -7,7 +7,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import me.rafaelldi.dotnet.warehouse.WarehouseService
-import me.rafaelldi.dotnet.warehouse.local.DotnetForklift
+import me.rafaelldi.dotnet.warehouse.forklift.DotnetForklift
 import org.jetbrains.jewel.bridge.addComposeTab
 
 

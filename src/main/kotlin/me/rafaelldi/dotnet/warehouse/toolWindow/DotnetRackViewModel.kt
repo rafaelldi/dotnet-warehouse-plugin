@@ -6,8 +6,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import me.rafaelldi.dotnet.warehouse.local.DotnetForkliftApi
-import me.rafaelldi.dotnet.warehouse.local.DotnetSdk
+import me.rafaelldi.dotnet.warehouse.forklift.DotnetForkliftApi
+import me.rafaelldi.dotnet.warehouse.forklift.DotnetSdk
 
 internal interface DotnetRackViewModelApi : Disposable {
     val dotnetSdkFlow: StateFlow<List<DotnetSdk>>
