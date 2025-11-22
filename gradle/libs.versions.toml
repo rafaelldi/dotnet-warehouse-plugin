@@ -1,5 +1,7 @@
 [versions]
 # libraries
+ktor="3.1.3"
+serialization = "1.9.0"
 junit = "4.13.2"
 opentest4j = "1.3.0"
 hamcrest = "2.2"
@@ -10,10 +12,14 @@ skikoAwtRuntimeAll = "0.9.22"
 
 # plugins
 changelog = "2.4.0"
-intelliJPlatform = "2.10.1"
+intelliJPlatform = "2.10.4"
 kotlin = "2.2.20"
 
 [libraries]
+ktorCio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
+ktorContentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktorJson = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+serializationJson = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 opentest4j = { group = "org.opentest4j", name = "opentest4j", version.ref = "opentest4j" }
 hamcrest = { group = "org.hamcrest", name = "hamcrest", version.ref = "hamcrest" }
@@ -26,3 +32,4 @@ changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 intelliJPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intelliJPlatform" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

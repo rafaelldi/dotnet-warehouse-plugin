@@ -18,4 +18,9 @@
                     doNotActivateOnStart="true"/>
         <notificationGroup id="Dotnet Warehouse" displayType="BALLOON" isLogByDefault="true"/>
     </extensions>
+
+    <actions>
+        <action id="Dotnet.Warehouse.Receive"
+                class="me.rafaelldi.dotnet.warehouse.actions.ReceiveDotnetCargoAction"/>
+    </actions>
 </idea-plugin>
