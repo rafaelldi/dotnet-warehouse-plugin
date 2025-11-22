@@ -13,14 +13,14 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
 @Service
-internal class ReceivingService {
+internal class ReceivingHubService {
     companion object {
-        fun getInstance(): ReceivingService = service()
+        fun getInstance(): ReceivingHubService = service()
 
         private const val DOTNET_FEED_URL =
             "https://builds.dotnet.microsoft.com/dotnet/release-metadata/releases-index.json"
 
-        private val LOG = logger<ReceivingService>()
+        private val LOG = logger<ReceivingHubService>()
     }
 
     private val client = HttpClient(CIO) {
@@ -31,16 +31,16 @@ internal class ReceivingService {
         }
     }
 
-    suspend fun receiveDotnetCargoIndex(): InboundCargoIndex? {
+    suspend fun receiveDotnetReleaseIndex(): DotnetReleaseIndex? {
         val response = client.get(DOTNET_FEED_URL)
         if (response.status.value !in 200..299) {
-            LOG.warn("Failed to receive dotnet index. Status: ${response.status}")
+            LOG.warn("Failed to receive dotnet release index. Status: ${response.status}")
             return null
         }
 
-        val cargoIndex: InboundCargoIndex = response.body()
-        LOG.trace { "Received dotnet cargo: $cargoIndex" }
+        val releaseIndex: DotnetReleaseIndex = response.body()
+        LOG.trace { "Received dotnet release index: $releaseIndex" }
 
-        return cargoIndex
+        return releaseIndex
     }
 }

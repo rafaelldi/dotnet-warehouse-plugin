@@ -6,15 +6,15 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.rafaelldi.dotnet.warehouse.WarehouseService
-import me.rafaelldi.dotnet.warehouse.receivingHub.ReceivingService
+import me.rafaelldi.dotnet.warehouse.receivingHub.ReceivingHubService
 
 class ReceiveDotnetCargoAction: AnAction() {
     override fun actionPerformed(actionEvent: AnActionEvent) {
         val project = actionEvent.project ?: return
-        val service = ReceivingService.getInstance()
+        val service = ReceivingHubService.getInstance()
         val scope = WarehouseService.getInstance(project).createScope(::WarehouseService.name)
         scope.launch(Dispatchers.Default)  {
-            service.receiveDotnetCargoIndex()
+            service.receiveDotnetReleaseIndex()
         }
     }
 
