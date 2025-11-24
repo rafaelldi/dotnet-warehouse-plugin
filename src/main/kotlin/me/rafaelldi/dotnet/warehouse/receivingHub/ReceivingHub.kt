@@ -13,14 +13,14 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
 @Service
-internal class ReceivingHubService {
+internal class ReceivingHub {
     companion object {
-        fun getInstance(): ReceivingHubService = service()
+        fun getInstance(): ReceivingHub = service()
 
         private const val DOTNET_FEED_URL =
             "https://builds.dotnet.microsoft.com/dotnet/release-metadata/releases-index.json"
 
-        private val LOG = logger<ReceivingHubService>()
+        private val LOG = logger<ReceivingHub>()
     }
 
     private val client = HttpClient(CIO) {
