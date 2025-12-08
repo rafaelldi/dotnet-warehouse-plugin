@@ -6,14 +6,22 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.progress.currentThreadCoroutineScope
 import kotlinx.coroutines.launch
 import me.rafaelldi.dotnet.warehouse.receivingHub.InboundCargoModel
+import me.rafaelldi.dotnet.warehouse.receivingHub.InboundCargoRid
 import me.rafaelldi.dotnet.warehouse.receivingHub.InboundCargoType
+import me.rafaelldi.dotnet.warehouse.receivingHub.InboundCargoVersion
 import me.rafaelldi.dotnet.warehouse.receivingHub.ReceivingHub
 
-class ReceiveDotnetCargoAction: AnAction() {
+class ReceiveDotnetCargoAction : AnAction() {
     override fun actionPerformed(actionEvent: AnActionEvent) {
         val service = ReceivingHub.getInstance()
         currentThreadCoroutineScope().launch {
-            service.receiveInboundCargo(InboundCargoModel("10.0", InboundCargoType.Sdk, "linux-x64"))
+            service.receiveInboundCargo(
+                InboundCargoModel(
+                    InboundCargoVersion.Version10,
+                    InboundCargoType.Sdk,
+                    InboundCargoRid.LinuxX64
+                )
+            )
         }
     }
 
